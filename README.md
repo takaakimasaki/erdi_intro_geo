@@ -37,8 +37,8 @@ pacman::p_load(here,dplyr,tidyverse,sf,terra,tmap,exactextractr,gdistance)
 Navigate to the **scripts/** folder and execute the R scripts as needed.  
 
 ### **4. Use the Datasets**  
-- Download the datasets from OneDrive and place them in the appropriate working directory.  
+- Download the datasets from OneDrive and place them in the appropriate working directory (GitHub/erdi_intro_geo).  
 - Ensure that file paths in the scripts match the dataset locations.  
 
 ## **Contact**  
-For any questions, feel free to reach out to **Taka Masaki**.  
+For any questions, feel free to reach out to **Taka Masaki** at tmasaki@adb.org.  
