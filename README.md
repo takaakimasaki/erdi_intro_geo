@@ -20,8 +20,8 @@ This repository contains all replication materials for the **Introduction to Geo
 
 📂 **scripts/** – Contains all R replication scripts for geospatial analysis.  
 📂 **figures/** – Stores all generated figures and visualizations.  
-📂 **data-raw/** (external) – Store the raw datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the GitHub/erdi_intro_geo folder in your local laptop.  
-📂 **data-clean/** (external) – Store the clean datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the GitHub/erdi_intro_geo folder in your local laptop.  
+📂 **data-raw/** (external) – Store the raw datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the `GitHub/erdi_intro_geo` folder in your local laptop.  
+📂 **data-clean/** (external) – Store the clean datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the `GitHub/erdi_intro_geo` folder in your local laptop.  
 
 ### **2. Software/Package Requirements**  
 - R 4.4.2
@@ -37,7 +37,7 @@ pacman::p_load(here,dplyr,tidyverse,sf,terra,tmap,exactextractr,gdistance)
 Navigate to the **scripts/** folder and execute the R scripts as needed.  
 
 ### **4. Use the Datasets**  
-- Download the datasets from OneDrive and place them in the appropriate working directory (GitHub/erdi_intro_geo).  
+- Download the datasets from OneDrive and place them in the appropriate working directory (`GitHub/erdi_intro_geo`).  
 - Ensure that file paths in the scripts match the dataset locations.  
 
 ## **Contact**  
