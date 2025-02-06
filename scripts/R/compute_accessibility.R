@@ -43,10 +43,7 @@ compute_accesssibility<-function(extent_list,
   # User Defined Variables - used if clipping from the global layer, if no clipping is needed, see lines 66-67 (currently commented out).
   # This could also be accomplished by importing a shapefile (for example)
   # Geographic Coordinates (WGS84)
-  left   <- extent_list[1]
-  right  <- extent_list[2]
-  bottom <- extent_list[3]
-  top    <- extent_list[4]
+
   # transition.matrix.exists.flag <- 0 # if the geo-corrected graph has already been made, this can save time.  Uses the same T.GC.filename as specified using the T.GC.filename variable.
 
   # Input Files
@@ -68,7 +65,7 @@ compute_accesssibility<-function(extent_list,
 
   #  Define the spatial template
   friction <- raster(friction.surface.filename)
-  fs1 <- crop(friction, extent(left, right, bottom, top))
+  fs1 <- raster::crop(friction, extent(extent_list))
   # Use the following line instead of the preceding 2 if clipping is not needed (i.e., to run globally), but be warned that trying this will far exceed the computational capacity available to most users.
   # fs1 <- raster(friction.surface.filename)
 

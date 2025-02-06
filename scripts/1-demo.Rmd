@@ -8,8 +8,10 @@ Load necessary dependencies
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install.packages("pacman")
+install.packages("remotes")
 remotes::install_github("r-tmap/tmap")
-pacman::p_load(here,dplyr,tidyverse,sf,terra,tmap,exactextractr)
+pacman::p_load(here,dplyr,tidyverse,sf,terra,tmap,exactextractr,gdistance)
 ```
 
 Load shapefiles
@@ -35,9 +37,11 @@ plot(st_geometry(adm3))
 Zonal statistics
 Example: Population by ADM1
 ```{r}
+#read population data
 pop <- terra::rast(here::here("data-raw","raster","worldpop","phl_ppp_2020_constrained.tif")) %>%
   terra::aggregate(., fun="sum", fact=100, na.rm=TRUE)
 
+#visualize
 map <- tm_shape(adm1) +
   tm_borders() +
   tm_shape(pop) + 
@@ -50,6 +54,8 @@ map <- tm_shape(adm1) +
             legend.text.size = 1.0),
             col_alpha = 0.7)
 map
+
+#save
 map %>%
   tmap_save(here::here("figures","phi_pop.png"))
 
@@ -57,6 +63,7 @@ map %>%
 adm1 <- adm1 %>%
   mutate(pop_tot = exactextractr::exact_extract(pop,.,"sum"))
 
+#visualize
 map <-  tm_shape(adm1) +
   tm_borders() +
   tm_polygons(
@@ -71,17 +78,19 @@ map <-  tm_shape(adm1) +
           legend.text.size = 1.0
         )) 
 map
+#save
 map %>%
   tmap_save(here::here("figures","phi_pop_by_polygon.png"))
 ```
 Accessibility
 Access to health facilities
 ```{r}
+#read data on travel time to health facilities (Weiss et al. 2020: https://www.nature.com/articles/s41591-020-1059-1)
 access_health <- terra::rast(here::here("data-raw","raster","friction_map","2020_motorized_friction_surface.geotiff.tif")) %>%
   crop(., adm1) %>%
   mask(., adm1)
 
-
+#visualize
 map <- tm_shape(adm1) +
   tm_borders() +
   tm_shape(access_health) + 
@@ -100,11 +109,9 @@ map %>%
 
 Spatial join
 ```{r}
-source(here::here("scripts","R","compute_accessibility.R")) #read in function
+#keep ADM1 polygon for NCR
 ncr <- adm1 %>%
   filter(ADM1_EN=="National Capital Region (NCR)")
-
-friction.surface.filename<-here::here("data-raw","raster","friction_map","2020_motorized_friction_surface.geotiff.tif") 
 
 school <- st_read(here::here("data-raw","shp","osm","philippines-latest-free.shp","gis_osm_pois_free_1.shp")) %>%
   filter(fclass %in% c("university","school")) 
@@ -157,26 +164,98 @@ map %>%
 
 Computing travel distance using the friction map
 ```{r}
-school_pts <- school %>%
+#read in function to compute travel time
+source(here::here("scripts","R","compute_accessibility.R")) 
+
+#school in greater NCR
+school_greater_ncr <- school %>%
+  filter(ADM1_PCODE %in% c("PH13", "PH04", "PH03"))
+
+#turn school locations into csv with lon and lat
+school_greater_ncr  %>%
   dplyr::mutate(lon = sf::st_coordinates(.)[,1],
                 lat = sf::st_coordinates(.)[,2]) %>%
   st_drop_geometry() %>%
-  dplyr::select(lon, lat)
+  dplyr::select(lon, lat) %>%
+  write_csv(here::here("data-clean","schools_ncr.csv"))
 
-school %>% 
-  write_csv(here::here("data-clean","schools.csv"))
+#keep polygons for greater NCR
+greater_ncr <- adm1 %>%
+  filter(ADM1_PCODE %in% c("PH13", "PH04", "PH03"))
 
-point.filename <- here::here("data-clean","schools.csv")
 
+#read friction map
+friction.surface.filename<-here::here("data-raw","raster","friction_map","2020_motorized_friction_surface.geotiff.tif") 
+
+friction_map <-terra::rast(here::here("data-raw","raster","friction_map","2020_motorized_friction_surface.geotiff.tif")) %>%
+  crop(., greater_ncr)
+
+#visualize
+map <- tm_shape(friction_map) + 
+  tm_raster(col.scale = tm_scale_intervals(style = "quantile",
+                                           values = rev(terrain.colors(64))), 
+            col.legend = tm_legend(title="Friction map",
+                                   reverse=TRUE,
+            position = tm_pos_out("right"),
+            legend.title.size = 1.2,
+            legend.text.size = 1.0),
+            col_alpha = 0.7) +
+  tm_shape(greater_ncr) +
+  tm_borders() 
+#map
+map %>%
+  tmap_save(here::here("figures","friction_ncr.png"))
+
+#with schools
+map <- tm_shape(friction_map) + 
+  tm_raster(col.scale = tm_scale_intervals(style = "quantile",
+                                           values = rev(terrain.colors(64))), 
+            col.legend = tm_legend(title="Friction map",
+                                   reverse=TRUE,
+            position = tm_pos_out("right"),
+            legend.title.size = 1.2,
+            legend.text.size = 1.0),
+            col_alpha = 0.7) +
+  tm_shape(greater_ncr) +
+  tm_borders() +
+  tm_shape(school_greater_ncr) +
+  tm_dots()
+
+#map
+map %>%
+  tmap_save(here::here("figures","friction_school_ncr.png"))
+
+extent_list <- greater_ncr
+point.filename <- here::here("data-clean","schools_ncr.csv")
 T.filename<- here::here("data-clean","PHI_motorized_study_area_T.rds")
 T.GC.filename<-here::here("data-clean","PHI_motorized_study_area_T_GC.rds")
 output.filename<-here::here("data-clean","PHI_motorized_travel_time_osm_schools.tif")
+transition.matrix.exists.flag <- 0
 
-compute_accesssibility(adm1,
+compute_accesssibility(extent_list,
                          transition.matrix.exists.flag,
                          friction.surface.filename,
                          point.filename,
                          T.filename,
                          T.GC.filename,
                          output.filename)
+
+travel_time <- terra::rast(here::here("data-clean","PHI_motorized_travel_time_osm_schools.tif")) %>%
+  terra::mask(., greater_ncr)
+
+#visualize
+map <- tm_shape(greater_ncr) +
+  tm_borders() +
+  tm_shape(travel_time) + 
+  tm_raster(col.scale = tm_scale_intervals(style = "quantile",
+                                           values = rev(terrain.colors(64))), 
+            col.legend = tm_legend(title="Travel time to schools",
+                                   reverse=TRUE,
+            position = tm_pos_out("right"),
+            legend.title.size = 1.2,
+            legend.text.size = 1.0),
+            col_alpha = 0.7)
+#map
+map %>%
+  tmap_save(here::here("figures","phi_travel_time_school_in_ncr.png"))
 ```
