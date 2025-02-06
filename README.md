@@ -20,24 +20,17 @@ This repository contains all replication materials for the **Introduction to Geo
 
 📂 **scripts/** – Contains all R replication scripts for geospatial analysis.  
 📂 **figures/** – Stores all generated figures and visualizations.  
-📂 **data/** (external) – The raw and clean datasets are hosted on OneDrive.  
+📂 **data-raw/** (external) – Store the raw datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the GitHub/erdi_intro_geo folder in your local laptop.  
+📂 **data-clean/** (external) – Store the clean datasets, which are hosted on [OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  Download and put in the GitHub/erdi_intro_geo folder in your local laptop.  
 
-### **Data Access**  
-The raw and clean datasets can be accessed via OneDrive at the following link:  
-🔗 **[Access Data on OneDrive](https://asiandevbank-my.sharepoint.com/:f:/g/personal/tmasaki_adb_org/EsnOzJDHHPRLqrMdMM0tlAoBALVpAxowUPD7Sdi_pkk4ig?e=26FebT)**  
-
-## **How to Use This Repository**  
-
-### **1. Clone the Repository**  
-```bash  
-git clone https://github.com/your-github-username/repository-name.git  
-cd repository-name  
-```
-
-### **2. Install Required R Packages**  
-Open R and run:  
+### **2. Software/Package Requirements**  
+- R 4.4.2
+- Open R and run:  
 ```r  
-install.packages(c("sf", "sp", "raster", "ggplot2", "tmap"))  
+install.packages("pacman")
+install.packages("remotes")
+remotes::install_github("r-tmap/tmap")
+pacman::p_load(here,dplyr,tidyverse,sf,terra,tmap,exactextractr,gdistance) 
 ```
 
 ### **3. Run the Replication Scripts**  
