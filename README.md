@@ -16,7 +16,7 @@ This repository contains all replication materials for the **Introduction to Geo
   - GIS analysis software  
   - GIS analysis techniques  
 
-## **Repository Structure**  
+### **1. Repository Structure**  
 
 📂 **scripts/** – Contains all R replication scripts for geospatial analysis.  
 📂 **figures/** – Stores all generated figures and visualizations.  
